@@ -1,7 +1,6 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 
 namespace Server
 {
@@ -58,15 +57,35 @@ namespace Server
             TransmitTimestamp = request.Skip(40).Take(8).ToArray();
         }
 
-        public NtpMessage GetAnswer()
+        public NtpMessage GetAnswer(double lie)
         {
-            //LeapIndicator = 0;
+            var timeWithLie = DateTime.Now;
+            var unixTime = timeWithLie - new DateTime(1900, 1, 1);
+            var seconds = BitConverter.GetBytes((int)unixTime.TotalSeconds);
+            var miliseconds = BitConverter.GetBytes(unixTime.Milliseconds);
+            var timestamp = new byte[8];
+            for (var i = 0; i < 4; i++)
+            {
+                timestamp[i] = seconds[i];
+            }
+
+            for (var i = 4; i < 8; i++)
+            {
+                timestamp[i] = miliseconds[i - 4];
+            }
+
+            LeapIndicator = 0;
             Mode = ModeType.Server;
-            //Stratum = 1;
-            //Precision = unchecked((byte)-12);
-            //RootDelay = new byte[4];
-            //RootDispersion = new byte[4];
-            //ReferenceId = new byte[4];
+            Stratum = 1;
+            Precision = unchecked((byte)-12); // ??
+            RootDelay = new byte[4];
+            RootDispersion = new byte[4];
+            ReferenceId = new byte[4];
+            
+            ReferenceTimestamp = timestamp;
+            TransmitTimestamp.CopyTo(OriginateTimestamp, 0);
+            ReceiveTimestamp = timestamp;
+            TransmitTimestamp = timestamp;
             return this;
         }
 

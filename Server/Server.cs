@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 
 namespace Server
 {
@@ -14,33 +11,39 @@ namespace Server
         private readonly Socket timeSocket;
         private readonly byte[] buffer;
         private readonly int port;
-        private readonly int lie;
+        private readonly double lie;
 
 
-        public SntpServer(int[] settings) : this(settings[0], settings[1], settings[2]){}
+        public SntpServer(int[] settings) : this(settings[0], settings[1]){}
 
-        public SntpServer(int port, int bufferSize, int lie)
+        public SntpServer(int port, double lie)
         {
             this.port = port;
             this.lie = lie;
             socket = GetUdpSocket(port);
             timeSocket = GetTimeSocket();
-            buffer = new byte[bufferSize];
+            buffer = new byte[48];
         }
 
         public void Start()
         {
+            Console.CancelKeyPress += (sender, args) => Close();
             try
             {
                 while (true)
                 {
                     var remoteEP = (EndPoint) new IPEndPoint(IPAddress.Any, port);
-                    var size = socket.ReceiveFrom(buffer, ref remoteEP);
-                    var request = buffer.Take(size).ToArray();
+                    socket.ReceiveFrom(buffer, ref remoteEP);
                     Console.WriteLine("Received from {0}", ((IPEndPoint) remoteEP).Address);
+                    var message = new NtpMessage(buffer);
                     
-                    var message = new NtpMessage(request);
-                    socket.SendTo(message.GetAnswer().ToBytes(), remoteEP);
+                    var timeMessage = new byte[48];
+                    timeMessage[0] = 0b0001_1011;
+                    timeSocket.Send(timeMessage);
+                    timeSocket.Receive(timeMessage);
+                    socket.SendTo(timeMessage, remoteEP);
+                    
+                    //socket.SendTo(message.GetAnswer(lie).ToBytes(), remoteEP);
                     Console.WriteLine("Answer sent");
                 }
             }
@@ -50,14 +53,16 @@ namespace Server
             }
             finally
             {
-                socket.Close();
-                timeSocket.Close();
-                Console.WriteLine("Disposed the port.");
+                Close();
             }
         }
 
-        private static byte[] GetAnswer(byte[] request) => 
-            new NtpMessage(request).GetAnswer().ToBytes();
+        public void Close()
+        {
+            socket.Close();
+            timeSocket.Close();
+            Console.WriteLine("Disposed the port.");
+        }
 
         private static Socket GetTimeSocket()
         {

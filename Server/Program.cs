@@ -5,7 +5,7 @@ namespace Server
 {
     public static class Program
     {
-        private static int[] DefaultSettings => new[] { 123, 1024, Environment.ProcessorCount };
+        private static int[] DefaultSettings => new[] { 123, -5 };
         
         private static int[] GetSettings(string[] args)
         {
@@ -17,7 +17,7 @@ namespace Server
         }
         
         public static void Main(string[] args)
-        {
+        {   
             var server = new SntpServer(GetSettings(args));
             server.Start();
         }

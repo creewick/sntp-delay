@@ -13,7 +13,7 @@ namespace Client
                 AddressFamily.InterNetwork,
                 SocketType.Dgram,
                 ProtocolType.Udp);
-            socket.Connect("time.windows.com", 123);
+            socket.Connect("127.0.0.1", 123);
         }
 
         public void Start()
