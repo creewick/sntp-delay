@@ -1,0 +1,6 @@
+D:\Programming Projects\C# Projects\sntp\Client\bin\Debug\Client.exe
+D:\Programming Projects\C# Projects\sntp\Client\bin\Debug\Client.pdb
+D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.exe
+D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.pdb
