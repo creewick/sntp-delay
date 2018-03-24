@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 
 namespace Server
 {
@@ -59,34 +60,39 @@ namespace Server
 
         public NtpMessage GetAnswer(double lie)
         {
-            var timeWithLie = DateTime.Now;
-            var unixTime = timeWithLie - new DateTime(1900, 1, 1);
-            var seconds = BitConverter.GetBytes((int)unixTime.TotalSeconds);
-            var miliseconds = BitConverter.GetBytes(unixTime.Milliseconds);
-            var timestamp = new byte[8];
-            for (var i = 0; i < 4; i++)
-            {
-                timestamp[i] = seconds[i];
-            }
-
-            for (var i = 4; i < 8; i++)
-            {
-                timestamp[i] = miliseconds[i - 4];
-            }
-
             LeapIndicator = 0;
-            Mode = ModeType.Server;
+            Mode = ModeType.Server; 
             Stratum = 1;
-            Precision = unchecked((byte)-12); // ??
+            Precision = unchecked((byte)-12);
             RootDelay = new byte[4];
             RootDispersion = new byte[4];
             ReferenceId = new byte[4];
+
+            var timestamp = Lie(lie);
             
             ReferenceTimestamp = timestamp;
             TransmitTimestamp.CopyTo(OriginateTimestamp, 0);
             ReceiveTimestamp = timestamp;
             TransmitTimestamp = timestamp;
             return this;
+        }
+
+        private static byte[] Lie(double lie)
+        {
+            var utcTime = DateTime.UtcNow.AddSeconds(lie) - new DateTime(1900, 1, 1);
+            
+            var seconds = (UInt32) utcTime.TotalSeconds;
+            var byteSeconds = BitConverter.GetBytes(seconds)
+                .Reverse().ToArray();
+            
+            var fraction = utcTime.TotalSeconds % 1 * Math.Pow(2, 32);
+            var byteFraction = BitConverter.GetBytes((UInt32) fraction)
+                .Reverse().ToArray();
+
+            var result = new byte[8];
+            Array.Copy(byteSeconds, 0, result, 0, 4);
+            Array.Copy(byteFraction, 0, result, 4, 4);
+            return result;
         }
 
         public byte[] ToBytes()

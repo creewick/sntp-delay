@@ -4,3 +4,9 @@ D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.csprojResolveAs
 D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
 D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.exe
 D:\Programming Projects\C# Projects\sntp\Client\obj\Debug\Client.pdb
+D:\Programming Projects\C# Projects\sntp-delay\Client\bin\Debug\Client.exe
+D:\Programming Projects\C# Projects\sntp-delay\Client\bin\Debug\Client.pdb
+D:\Programming Projects\C# Projects\sntp-delay\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+D:\Programming Projects\C# Projects\sntp-delay\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+D:\Programming Projects\C# Projects\sntp-delay\Client\obj\Debug\Client.exe
+D:\Programming Projects\C# Projects\sntp-delay\Client\obj\Debug\Client.pdb
